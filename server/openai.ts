@@ -2,8 +2,8 @@ import OpenAI from "openai";
 import fs from "fs";
 
 // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR,
 });
 
 // Check if API key is properly configured
@@ -11,7 +11,9 @@ if (!process.env.OPENAI_API_KEY && !process.env.OPENAI_API_KEY_ENV_VAR) {
   console.error("OPENAI_API_KEY environment variable is required");
 }
 
-export async function transcribeAudio(audioFilePath: string): Promise<{ text: string, duration?: number }> {
+export async function transcribeAudio(
+  audioFilePath: string,
+): Promise<{ text: string; duration?: number }> {
   const audioReadStream = fs.createReadStream(audioFilePath);
 
   const transcription = await openai.audio.transcriptions.create({
@@ -25,80 +27,90 @@ export async function transcribeAudio(audioFilePath: string): Promise<{ text: st
   };
 }
 
-export async function processNote(transcription: string, language: string = "en", style: string = "structured"): Promise<{
+export async function processNote(
+  transcription: string,
+  language: string = "en",
+  style: string = "minimal",
+): Promise<{
   title: string;
   processedNote: string;
 }> {
-  const prompt = `Please process this voice note transcription and provide:
-1. A clear, descriptive title (max 60 characters)
-2. A well-organized note based on the content
+  const system = [
+    "You are a multilingual text-cleanup assistant.",
+    "Your core rules:",
+    "1) Do NOT summarize or drop content. Keep all details.",
+    "2) Fix spacing, punctuation, casing, and paragraph breaks.",
+    "3) Keep mixed-language segments as-is.",
+    "5) Respect style:",
+    "   - minimal: clean and lightly reorder only to fix obvious fragmentation; preserve original structure and meaning.",
+    "   - narrative: rewrite into flowing paragraphs without adding or removing facts.",
+    "6) Never invent facts or names. If something is unclear, keep it verbatim.",
+    "7) Output valid JSON only, matching the provided schema.",
+  ].join("\n");
 
-Transcription: "${transcription}"
+  const schema = {
+    name: "NoteOutput",
+    schema: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        title: {
+          type: "string",
+          description: "Max 60 chars, concise and descriptive",
+        },
+        processedNote: {
+          type: "string",
+          description: "Final cleaned note text",
+        },
+      },
+      required: ["title", "processedNote"],
+    },
+    strict: true,
+  } as const;
 
-Output language: ${language}
-Organization style: ${style === "narrative" ? "Use paragraph format with clear flow" : "Clean up the text minimally while preserving the original structure"}
+  const userPayload = {
+    transcription,
+    language, 
+    style, // "minimal" | "narrative"
+    constraints: {
+      maxTitleChars: 60,
+      keepAllDetails: true,
+      allowReorderForClarity: style === "narrative",
+      preserveMixedLanguage: language === "preserve",
+    },
+  };
 
-Respond with JSON in this exact format: {"title": "Generated Title", "processedNote": "Organized note content"}`;
+  const prompt = [
+    "Task: Clean and organize this voice transcription into a polished note.",
+    "Return JSON matching the schema only.",
+    "",
+    "Now process the following payload:",
+    JSON.stringify(userPayload, null, 2),
+  ].join("\n");
 
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-5",
+      model: "gpt-4o-mini", // or "gpt-5" if you prefer; 4o-mini is cheap and good at formatting
       messages: [
-        {
-          role: "system",
-          content: "You are an expert note-taking assistant. Create clear, organized notes from voice transcriptions. Always respond with valid JSON."
-        },
-        {
-          role: "user",
-          content: prompt
-        }
+        { role: "system", content: system },
+        { role: "user", content: prompt },
       ],
-      response_format: { type: "json_object" },
+      response_format: { type: "json_schema", json_schema: schema },
+      temperature: 0.2,
     });
 
-    const result = JSON.parse(response.choices[0].message.content || "{}");
-    
+    const raw = response.choices?.[0]?.message?.content ?? "{}";
+    const result = JSON.parse(raw);
+
     return {
       title: result.title || "Untitled Note",
       processedNote: result.processedNote || transcription,
     };
   } catch (error) {
     console.error("Error processing note with AI:", error);
-    // Fallback to basic processing
     return {
       title: "Voice Note " + new Date().toLocaleDateString(),
       processedNote: transcription,
     };
-  }
-}
-
-export async function generateTitle(transcription: string, language: string = "en"): Promise<string> {
-  const prompt = `Generate a clear, descriptive title (max 60 characters) for this voice note transcription in ${language}:
-
-"${transcription}"
-
-Respond with JSON: {"title": "Generated Title"}`;
-
-  try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-5",
-      messages: [
-        {
-          role: "system",
-          content: "You are a title generation expert. Create concise, descriptive titles for voice notes. Always respond with valid JSON."
-        },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      response_format: { type: "json_object" },
-    });
-
-    const result = JSON.parse(response.choices[0].message.content || "{}");
-    return result.title || "Untitled Note";
-  } catch (error) {
-    console.error("Error generating title:", error);
-    return "Voice Note " + new Date().toLocaleDateString();
   }
 }
