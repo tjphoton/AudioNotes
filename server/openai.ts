@@ -3,8 +3,13 @@ import fs from "fs";
 
 // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || "default_key"
+  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR
 });
+
+// Check if API key is properly configured
+if (!process.env.OPENAI_API_KEY && !process.env.OPENAI_API_KEY_ENV_VAR) {
+  console.error("OPENAI_API_KEY environment variable is required");
+}
 
 export async function transcribeAudio(audioFilePath: string): Promise<{ text: string, duration?: number }> {
   const audioReadStream = fs.createReadStream(audioFilePath);

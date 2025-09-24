@@ -52,10 +52,25 @@ export class MemStorage implements IStorage {
       noteOrganizationStyle: "structured",
       autoGenerateTitles: true,
       extractActionItems: true,
-      keepRawAudio: true,
+      keepRawAudio: false, // Default to false to prevent storage leakage
       dataRetention: "forever",
     };
     this.settings.set(demoSettings.id, demoSettings);
+    
+    // Create a sample note for testing the notes library
+    const sampleNote: Note = {
+      id: "sample-note-123",
+      userId: "demo-user-123",
+      title: "Welcome to VoiceNote",
+      originalTranscription: "Welcome to VoiceNote, the elegant audio note-taking app that automatically transcribes and organizes your voice memos. This is a sample note to demonstrate the library functionality.",
+      aiProcessedNote: "# Welcome to VoiceNote\n\nWelcome to VoiceNote, the elegant audio note-taking app that automatically transcribes and organizes your voice memos.\n\n## Key Features\n- **Automatic Transcription**: Convert speech to text using OpenAI's Whisper\n- **AI Organization**: Clean up and structure your notes with GPT\n- **Elegant Interface**: Inspired by AudioPen and Notion's clean design\n- **Voice-First**: Capture thoughts naturally through speech\n\nThis is a sample note to demonstrate the library functionality and showcase the clean, organized output that VoiceNote produces from your voice recordings.",
+      audioFilePath: null,
+      duration: 45,
+      fileSize: 2048,
+      language: "en",
+      createdAt: new Date(),
+    };
+    this.notes.set(sampleNote.id, sampleNote);
   }
 
   // User methods

@@ -173,6 +173,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/notes/:id", async (req, res) => {
     try {
+      // Get the note first to check for audio file
+      const note = await storage.getNote(req.params.id);
+      if (!note) {
+        return res.status(404).json({ error: "Note not found" });
+      }
+
+      // Delete audio file if it exists
+      if (note.audioFilePath && fs.existsSync(note.audioFilePath)) {
+        try {
+          fs.unlinkSync(note.audioFilePath);
+        } catch (audioError) {
+          console.warn("Could not delete audio file:", audioError);
+        }
+      }
+
       const deleted = await storage.deleteNote(req.params.id);
       if (!deleted) {
         return res.status(404).json({ error: "Note not found" });
