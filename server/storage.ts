@@ -29,6 +29,33 @@ export class MemStorage implements IStorage {
     this.users = new Map();
     this.notes = new Map();
     this.settings = new Map();
+    
+    // Create demo user for testing
+    const demoUser: User = {
+      id: "demo-user-123",
+      username: "demo",
+      email: "demo@example.com",
+      password: "demo123",
+      language: "en",
+      createdAt: new Date(),
+    };
+    this.users.set(demoUser.id, demoUser);
+    
+    // Create default settings for demo user
+    const demoSettings: Settings = {
+      id: "demo-settings-123",
+      userId: "demo-user-123",
+      outputLanguage: "en",
+      transcriptionModel: "whisper-1",
+      audioQuality: "high",
+      autoStopOnSilence: true,
+      noteOrganizationStyle: "structured",
+      autoGenerateTitles: true,
+      extractActionItems: true,
+      keepRawAudio: true,
+      dataRetention: "forever",
+    };
+    this.settings.set(demoSettings.id, demoSettings);
   }
 
   // User methods

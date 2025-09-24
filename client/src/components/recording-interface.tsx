@@ -104,7 +104,7 @@ export default function RecordingInterface({ onNoteCreated }: RecordingInterface
         <CardContent className="p-0 space-y-8">
           {/* Timer Display */}
           <div className="space-y-4">
-            <div className="timer-font text-6xl font-light text-secondary mb-2">
+            <div className="timer-font text-6xl font-light text-secondary mb-2 font-mono">
               {formatTime(duration)}
             </div>
             <div className="text-sm text-muted-foreground font-mono">/ 15:00 max</div>
