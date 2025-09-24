@@ -13,7 +13,14 @@ interface MulterRequest extends Request {
 
 // Configure multer for audio file uploads
 const upload = multer({
-  dest: "uploads/",
+  storage: multer.diskStorage({
+    destination: "uploads/",
+    filename: (req, file, cb) => {
+      // Generate unique filename with .webm extension
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, 'audio-' + uniqueSuffix + '.webm');
+    }
+  }),
   limits: {
     fileSize: 50 * 1024 * 1024, // 50MB limit
   },

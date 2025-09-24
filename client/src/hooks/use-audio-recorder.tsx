@@ -51,7 +51,7 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
       };
 
       mediaRecorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/wav' });
+        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
         setAudioBlob(blob);
         
         // Clean up stream
@@ -98,7 +98,7 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
     return new Promise((resolve) => {
       if (mediaRecorderRef.current && isRecording) {
         mediaRecorderRef.current.onstop = () => {
-          const blob = new Blob(chunksRef.current, { type: 'audio/wav' });
+          const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
           setAudioBlob(blob);
           
           // Clean up stream
