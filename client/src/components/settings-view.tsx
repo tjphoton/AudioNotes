@@ -143,17 +143,6 @@ export default function SettingsView() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-sm font-medium">Auto-stop on silence</Label>
-                  <p className="text-xs text-muted-foreground">Stop recording after 5 seconds of silence</p>
-                </div>
-                <Switch
-                  checked={settings.autoStopOnSilence ?? true}
-                  onCheckedChange={(value) => handleSettingChange("autoStopOnSilence", value)}
-                  data-testid="auto-stop-switch"
-                />
-              </div>
             </div>
           </CardContent>
         </Card>
@@ -169,40 +158,17 @@ export default function SettingsView() {
               <div>
                 <Label htmlFor="note-style" className="text-sm font-medium">Note Organization Style</Label>
                 <Select
-                  value={settings.noteOrganizationStyle || "structured"}
+                  value={settings.noteOrganizationStyle || "minimal"}
                   onValueChange={(value) => handleSettingChange("noteOrganizationStyle", value)}
                 >
                   <SelectTrigger className="mt-2" data-testid="note-style-select">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="structured">Structured (Bullet points, headings)</SelectItem>
                     <SelectItem value="narrative">Narrative (Paragraph format)</SelectItem>
                     <SelectItem value="minimal">Minimal (Clean up only)</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-sm font-medium">Auto-generate titles</Label>
-                  <p className="text-xs text-muted-foreground">Create descriptive titles for your notes</p>
-                </div>
-                <Switch
-                  checked={settings.autoGenerateTitles ?? true}
-                  onCheckedChange={(value) => handleSettingChange("autoGenerateTitles", value)}
-                  data-testid="auto-titles-switch"
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-sm font-medium">Extract action items</Label>
-                  <p className="text-xs text-muted-foreground">Identify tasks and deadlines in your notes</p>
-                </div>
-                <Switch
-                  checked={settings.extractActionItems ?? true}
-                  onCheckedChange={(value) => handleSettingChange("extractActionItems", value)}
-                  data-testid="extract-actions-switch"
-                />
               </div>
             </div>
           </CardContent>

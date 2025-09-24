@@ -31,10 +31,7 @@ export const settings = pgTable("settings", {
   outputLanguage: text("output_language").default("en"),
   transcriptionModel: text("transcription_model").default("whisper-1"),
   audioQuality: text("audio_quality").default("high"),
-  autoStopOnSilence: boolean("auto_stop_on_silence").default(true),
-  noteOrganizationStyle: text("note_organization_style").default("structured"),
-  autoGenerateTitles: boolean("auto_generate_titles").default(true),
-  extractActionItems: boolean("extract_action_items").default(true),
+  noteOrganizationStyle: text("note_organization_style").default("minimal"),
   keepRawAudio: boolean("keep_raw_audio").default(true),
   dataRetention: text("data_retention").default("forever"),
 });
@@ -62,10 +59,7 @@ export const insertSettingsSchema = createInsertSchema(settings).pick({
   outputLanguage: true,
   transcriptionModel: true,
   audioQuality: true,
-  autoStopOnSilence: true,
   noteOrganizationStyle: true,
-  autoGenerateTitles: true,
-  extractActionItems: true,
   keepRawAudio: true,
   dataRetention: true,
 });

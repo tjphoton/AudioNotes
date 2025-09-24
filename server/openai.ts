@@ -36,7 +36,7 @@ export async function processNote(transcription: string, language: string = "en"
 Transcription: "${transcription}"
 
 Output language: ${language}
-Organization style: ${style === "structured" ? "Use bullet points, headings, and clear structure" : style === "narrative" ? "Use paragraph format with clear flow" : "Clean up the text minimally while preserving the original structure"}
+Organization style: ${style === "narrative" ? "Use paragraph format with clear flow" : "Clean up the text minimally while preserving the original structure"}
 
 Respond with JSON in this exact format: {"title": "Generated Title", "processedNote": "Organized note content"}`;
 

@@ -53,10 +53,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         outputLanguage: userData.language || "en",
         transcriptionModel: "whisper-1",
         audioQuality: "high",
-        autoStopOnSilence: true,
-        noteOrganizationStyle: "structured",
-        autoGenerateTitles: true,
-        extractActionItems: true,
+        noteOrganizationStyle: "minimal",
         keepRawAudio: true,
         dataRetention: "forever",
       });
@@ -136,7 +133,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get user settings
       const settings = await storage.getUserSettings(userId);
       const language = settings?.outputLanguage || "en";
-      const organizationStyle = settings?.noteOrganizationStyle || "structured";
+      const organizationStyle = settings?.noteOrganizationStyle || "minimal";
 
       // Transcribe audio
       const { text: transcription, duration } = await transcribeAudio(req.file.path);

@@ -48,10 +48,7 @@ export class MemStorage implements IStorage {
       outputLanguage: "en",
       transcriptionModel: "whisper-1",
       audioQuality: "high",
-      autoStopOnSilence: true,
-      noteOrganizationStyle: "structured",
-      autoGenerateTitles: true,
-      extractActionItems: true,
+      noteOrganizationStyle: "minimal",
       keepRawAudio: false, // Default to false to prevent storage leakage
       dataRetention: "forever",
     };
@@ -163,10 +160,7 @@ export class MemStorage implements IStorage {
         outputLanguage: insertSettings.outputLanguage || null,
         transcriptionModel: insertSettings.transcriptionModel || null,
         audioQuality: insertSettings.audioQuality || null,
-        autoStopOnSilence: insertSettings.autoStopOnSilence || null,
         noteOrganizationStyle: insertSettings.noteOrganizationStyle || null,
-        autoGenerateTitles: insertSettings.autoGenerateTitles || null,
-        extractActionItems: insertSettings.extractActionItems || null,
         keepRawAudio: insertSettings.keepRawAudio || null,
         dataRetention: insertSettings.dataRetention || null,
       };
